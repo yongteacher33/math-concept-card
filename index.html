@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>김용지 · 일차함수 개념카드</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#172033;background:#fff}
+.wrap{max-width:900px;margin:auto;padding:20px}.card{border:1px solid #dbe2ea;border-radius:18px;padding:18px;margin:14px 0;background:#f8fafc}
+h1{font-size:1.4rem;margin:0 0 6px}.equation{font:800 1.8rem ui-monospace,SFMono-Regular,Menlo,monospace}
+.controls{display:grid;grid-template-columns:1fr 1fr;gap:14px}.compare{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+button{min-height:46px;border:1px solid #cbd5e1;border-radius:12px;background:#fff;font-weight:700;font-size:1rem;cursor:pointer}
+button.active{background:#2563eb;color:#fff;border-color:#2563eb}
+input[type=range]{width:100%;min-height:36px;accent-color:#2563eb}
+textarea{width:100%;min-height:110px;padding:12px;border:1px solid #cbd5e1;border-radius:12px;font:inherit}
+.grid{display:grid;grid-template-columns:1.1fr 1.4fr;gap:14px}svg{width:100%;height:auto;background:#fff;border:1px solid #dbe2ea;border-radius:14px}
+table{width:100%;border-collapse:collapse;text-align:center}th,td{padding:10px;border-bottom:1px solid #dbe2ea}
+.notice{line-height:1.7;background:#eef4ff;border-radius:12px;padding:12px}
+@media(max-width:700px){.wrap{padding:12px}.controls,.grid{grid-template-columns:1fr}.compare{grid-template-columns:1fr 1fr 1fr}.card{padding:14px}}
+@media print{body{background:#fff}.wrap{max-width:none;padding:0}.no-print{display:none!important}.card{break-inside:avoid;border:1px solid #999}.print-title{display:block}.graph-card{display:block}}
+</style>
+</head>
+<body>
+<div class="wrap" id="app">
+<div class="card">
+<h1>김용지 · 일차함수 개념카드</h1>
+<div class="equation" id="eq">y = 3x − 2</div>
+<p>기울기 m과 y절편 b의 변화를 식·그래프·좌표표로 확인합니다.</p>
+</div>
+<div class="card no-print">
+<strong>b = −2 고정 · 기울기 비교</strong>
+<div class="compare" style="margin-top:10px">
+<button data-m="-2">m = −2</button><button data-m="0">m = 0</button><button data-m="2">m = 2</button>
+</div>
+</div>
+<div class="grid">
+<div class="card no-print">
+<label><strong>기울기 m</strong> <span id="mv">3</span></label>
+<input id="m" type="range" min="-5" max="5" step="1" value="3">
+<p><strong>기울기</strong> : x가 1 증가할 때 y의 변화량</p>
+<p><strong>y절편</strong> : x = 0일 때 y값</p>
+<div class="notice">b = −2이므로 m이 −2, 0, 2로 달라져도 모두 <strong>(0, −2)</strong>를 지납니다.</div>
+</div>
+<div class="card graph-card">
+<strong>그래프</strong>
+<svg id="graph" viewBox="0 0 520 360" aria-label="일차함수 그래프"></svg>
+<p>※ 표시 범위 밖에서도 그래프는 같은 규칙으로 계속 이어집니다.</p>
+</div>
+</div>
+<div class="card">
+<strong>좌표표 · 현재 함수</strong>
+<table><thead><tr><th>x</th><th>−1</th><th>0</th><th>1</th><th>2</th></tr></thead>
+<tbody><tr><th>y</th><td id="y0">−5</td><td id="y1">−2</td><td id="y2">1</td><td id="y3">4</td></tr></tbody></table>
+</div>
+<div class="card">
+<strong>내가 발견한 사실</strong>
+<textarea id="observation">기울기의 절댓값이 클수록 직선이 더 가파르게 되고, b가 같으면 기울기가 달라도 모두 같은 y절편을 지난다.</textarea>
+</div>
+<div class="card">
+<strong>핵심 개념</strong>
+<p id="summary">y = 3x − 2에서 기울기 3은 x가 1 증가할 때 y가 3 증가한다는 뜻이고, y절편 −2는 x = 0일 때 y값이 −2라는 뜻입니다.</p>
+</div>
+<div class="no-print" style="text-align:right"><button id="print">🖨 인쇄하기</button></div>
+</div>
+<script>
+const $=s=>document.querySelector(s), fmt=n=>n<0?'−'+Math.abs(n):String(n);
+const eq=m=>m===0?'y = −2':'y = '+(m===1?'x':m===-1?'−x':fmt(m)+'x')+' − 2';
+function draw(m){
+ const W=520,H=360,s=24,x0=260,y0=188,X=x=>x0+x*s,Y=y=>y0-y*s;let out='';
+ for(let x=-9;x<=10;x++){let xx=X(x);out+=`<line x1="${xx}" y1="20" x2="${xx}" y2="340" stroke="#e5e7eb"/>`;if(xx>=35&&xx<=500)out+=`<text x="${xx}" y="354" text-anchor="middle" font-size="11" fill="#64748b">${x}</text>`}
+ for(let y=-6;y<=7;y++){let yy=Y(y);out+=`<line x1="40" y1="${yy}" x2="505" y2="${yy}" stroke="#e5e7eb"/>`;if(yy>=20&&yy<=342&&y!==0)out+=`<text x="31" y="${yy+4}" text-anchor="end" font-size="11" fill="#64748b">${y}</text>`}
+ out+=`<line x1="${X(0)}" y1="20" x2="${X(0)}" y2="340" stroke="#334155" stroke-width="2"/><line x1="40" y1="${Y(0)}" x2="505" y2="${Y(0)}" stroke="#334155" stroke-width="2"/>`;
+ out+=`<line x1="${X(-9)}" y1="${Y(m*-9-2)}" x2="${X(10)}" y2="${Y(m*10-2)}" stroke="#2563eb" stroke-width="4"/>`;
+ [-1,0,1,2].forEach(x=>{let y=m*x-2; if(Y(y)>15&&Y(y)<345)out+=`<circle cx="${X(x)}" cy="${Y(y)}" r="5" fill="#2563eb"/><text x="${X(x)+7}" y="${Y(y)-8}" font-size="12" fill="#1e40af">(${x}, ${y})</text>`});
+ out+=`<circle cx="${X(0)}" cy="${Y(-2)}" r="7" fill="white" stroke="#dc2626" stroke-width="3"/><text x="${X(0)+10}" y="${Y(-2)+18}" font-size="12" font-weight="700" fill="#b91c1c">(0, −2)</text><text x="492" y="${Y(0)-8}">x</text><text x="${X(0)+8}" y="30">y</text>`;
+ $('#graph').innerHTML=out;
+}
+function update(m){
+ m=Number(m);$('#m').value=m;$('#mv').textContent=fmt(m);$('#eq').textContent=eq(m);
+ [-1,0,1,2].forEach((x,i)=>$('#y'+i).textContent=fmt(m*x-2));
+ $('#summary').textContent=`${eq(m)}에서 기울기 ${fmt(m)}은 x가 1 증가할 때 y의 변화량을 나타내고, y절편 −2는 x = 0일 때 y값이 −2라는 뜻입니다. 따라서 현재 직선도 (0, −2)를 지납니다.`;
+ document.querySelectorAll('[data-m]').forEach(b=>b.classList.toggle('active',Number(b.dataset.m)===m));draw(m);
+}
+$('#m').addEventListener('input',e=>update(e.target.value));
+document.querySelectorAll('[data-m]').forEach(b=>b.addEventListener('click',()=>update(b.dataset.m)));
+$('#print').addEventListener('click',()=>window.print());update(3);
+</script>
+</body></html>

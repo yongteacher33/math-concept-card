@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>대칭 엽서 · 4주차 개초보 미션</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(135deg,#eef7ff,#fdf2f8);color:#102a43;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans KR",sans-serif;line-height:1.55}
+main{max-width:1080px;margin:auto;padding:18px}header,.card{background:#fff;border:1px solid #d9e2ec;border-radius:18px;box-shadow:0 7px 24px #102a4312}
+header{background:#102a43;color:#fff;padding:22px;margin-bottom:16px}h1{margin:0 0 4px;font-size:clamp(1.4rem,4vw,2rem)}h2{margin:0 0 12px;font-size:1.15rem}
+.grid{display:grid;grid-template-columns:310px 1fr;gap:16px}.card{padding:17px}
+label{display:block;font-weight:800;margin:13px 0 6px}input[type=text],input[type=number]{width:100%;padding:10px;border:2px solid #d9e2ec;border-radius:10px;font:inherit}
+input:focus{outline:3px solid #bfdbfe;border-color:#2563eb}input[type=range]{width:100%;accent-color:#0284c7}
+.row{display:grid;grid-template-columns:1fr 65px;gap:8px}.value{text-align:center;border:1px solid #d9e2ec;border-radius:9px;padding:7px;font-weight:800}
+button{width:100%;padding:11px;border:0;border-radius:10px;font:inherit;font-weight:800;cursor:pointer;margin-top:10px}.primary{background:#075985;color:#fff}.secondary{background:#e0f2fe;color:#075985}
+.art{padding:10px;border:2px solid #d9e2ec;border-radius:14px;background:#fff}svg{display:block;width:100%;height:auto;border-radius:10px}
+.math{margin-top:13px;background:#f0fdfa;border-left:5px solid #0f766e;border-radius:10px;padding:13px}.formula{font-size:1.15rem;font-weight:900}
+.notice{margin-top:13px;background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;padding:12px}.hint{font-size:.86rem;color:#52606d}.status{min-height:1.4em;margin-top:8px;font-weight:700}.warning{color:#b91c1c}
+@media(max-width:780px){main{padding:10px}.grid{grid-template-columns:1fr}.card{padding:14px}}@media print{body{background:#fff}.controls,.no-print{display:none!important}.grid{display:block}header{color:#000;background:#fff;box-shadow:none}}
+</style>
+</head>
+<body>
+<main>
+<header><h1>4주차 개초보 미션 · 대칭 엽서</h1><div>꽃잎 수와 이름을 바꾸면 완성되는 회전대칭 작품</div></header>
+<div class="grid">
+<section class="card controls">
+<h2>① 작품 설정</h2>
+<label for="name">별명</label><input id="name" type="text" value="[내 별명]" maxlength="30" autocomplete="off">
+<div class="hint">실제 개인정보 대신 별명이나 가상 이름을 사용하세요.</div>
+<label for="title">작품 제목</label><input id="title" type="text" value="푸른 회전 꽃" maxlength="40" autocomplete="off">
+<label for="range">꽃잎 수 n (4~16)</label>
+<div class="row"><input id="range" type="range" min="4" max="16" step="1" value="8"><output id="out" class="value">8</output></div>
+<div class="hint">슬라이더를 선택한 뒤 키보드 ←/→로 조절할 수 있습니다.</div>
+<label for="num">꽃잎 수 직접 입력</label><input id="num" type="number" min="4" max="16" step="1" value="8" inputmode="numeric">
+<div class="hint">4~16만 사용할 수 있습니다.</div>
+<button id="save" class="primary">SVG 파일 저장</button><button id="print" class="secondary">인쇄 화면</button>
+<div id="status" class="status" role="status" aria-live="polite"></div>
+<div class="notice"><strong>완료 확인</strong><ol><li>결과를 직접 바꿔 보기</li><li>SVG 파일 열어 보기</li><li>나의 수학 설명 한 문장</li><li>배포 링크 공유</li></ol></div>
+</section>
+<section class="card">
+<h2 id="heading">푸른 회전 꽃</h2>
+<div class="art">
+<svg id="svg" viewBox="0 0 600 600" role="img" aria-labelledby="st sd"><title id="st"></title><desc id="sd"></desc>
+<rect width="600" height="600" fill="#fff"/><g id="axes"></g><g id="petals"></g>
+<circle cx="300" cy="300" r="9" fill="#102a43"/><circle cx="300" cy="300" r="4" fill="#fff"/>
+</svg></div>
+<div class="math"><h2>② 수학 설명</h2><p id="formula" class="formula"></p><p id="exp"></p><p id="axis"></p>
+<p><strong>작품:</strong> <span id="dt"></span> · <strong>별명:</strong> <span id="dn"></span></p></div>
+<label for="sentence">나의 수학 설명</label>
+<input id="sentence" type="text" maxlength="120" placeholder="예: 8번 돌리면 처음 모양으로 돌아온다.">
+<div class="hint">입력한 문장도 SVG에 함께 저장됩니다.</div>
+</section>
+</div></main>
+<script>
+const $=id=>document.getElementById(id),NS="http://www.w3.org/2000/svg";let n=8;
+function text(v,f){v=(v||"").trim().replace(/\s+/g," ");return v||f}
+function angle(){return 360/n} function af(){let a=angle(),r=Math.round(a*100000)/100000;return r+"°"}
+function pt(r,a){let t=a*Math.PI/180;return[300+r*Math.cos(t),300+r*Math.sin(t)]}
+function render(){
+ n=Math.max(4,Math.min(16,Math.round(Number($("range").value)||8)));$("range").value=n;$("num").value=n;$("out").value=n;
+ const title=text($("title").value,"푸른 회전 꽃"),name=text($("name").value,"[내 별명]"),sentence=text($("sentence").value,"나의 수학 설명을 입력해 보세요.");
+ $("heading").textContent=title;$("dt").textContent=title;$("dn").textContent=name;$("st").textContent=title+" — "+n+"회 회전대칭";$("sd").textContent=n+"개의 꽃잎이 중심을 기준으로 "+af()+"씩 반복됩니다.";
+ $("formula").textContent="회전각 = 360° ÷ "+n+" = "+af();
+ $("exp").textContent=n+"개의 꽃잎이 중심을 기준으로 "+af()+"씩 회전하며 반복되므로 "+n+"회 회전대칭입니다.";
+ $("axis").textContent="점선은 중심을 지나는 회전의 기준축입니다. 한 꽃잎을 "+af()+"만큼 돌리면 다음 꽃잎 방향과 일치합니다.";
+ $("axes").innerHTML="";$("petals").innerHTML="";
+ for(let i=0;i<n;i++){let [x,y]=pt(260,i*angle()-90),l=document.createElementNS(NS,"line");l.setAttribute("x1",300);l.setAttribute("y1",300);l.setAttribute("x2",x);l.setAttribute("y2",y);l.setAttribute("stroke","#94a3b8");l.setAttribute("stroke-width",2);l.setAttribute("stroke-dasharray","7 7");$("axes").appendChild(l)}
+ for(let i=0;i<n;i++){let g=document.createElementNS(NS,"g"),p=document.createElementNS(NS,"path");g.setAttribute("transform","rotate("+(i*angle())+" 300 300)");p.setAttribute("d","M300 292 C244 265 235 210 300 72 C365 210 356 265 300 292 Z");p.setAttribute("fill","#38bdf8");p.setAttribute("fill-opacity",".88");p.setAttribute("stroke","#075985");p.setAttribute("stroke-width",5);p.setAttribute("stroke-linejoin","round");g.appendChild(p);$("petals").appendChild(g)}
+ $("status").textContent="";
+}
+$("range").oninput=render;$("num").onchange=e=>{let v=Number(e.target.value);if(!Number.isFinite(v)||v<4||v>16){$("status").textContent="꽃잎 수는 4~16 범위입니다. 가장 가까운 값으로 조정했습니다."; $("status").className="status warning"}$("range").value=Math.max(4,Math.min(16,Math.round(v||8)));render()};
+["name","title","sentence"].forEach(id=>$(id).oninput=render);
+$("print").onclick=()=>window.print();
+$("save").onclick=()=>{
+ try{let c=$("svg").cloneNode(true),title=text($("title").value,"푸른 회전 꽃"),name=text($("name").value,"[내 별명]"),sentence=text($("sentence").value,"나의 수학 설명을 입력해 보세요.");
+ const meta=document.createElementNS(NS,"metadata");meta.textContent="대칭 엽서 | "+title+" | 별명: "+name+" | "+n+"회 회전대칭 | 회전각 "+af()+" | "+sentence;c.insertBefore(meta,c.firstChild);
+ const g=document.createElementNS(NS,"g"),t=document.createElementNS(NS,"text"),b=document.createElementNS(NS,"text");t.setAttribute("x",300);t.setAttribute("y",36);t.setAttribute("text-anchor","middle");t.setAttribute("font-size",22);t.setAttribute("font-weight",800);t.setAttribute("fill","#102a43");t.textContent=title;b.setAttribute("x",300);b.setAttribute("y",575);b.setAttribute("text-anchor","middle");b.setAttribute("font-size",14);b.setAttribute("fill","#102a43");b.textContent="별명: "+name+" · "+n+"회 회전대칭 · 회전각 "+af();g.append(t,b);c.appendChild(g);
+ let data=new XMLSerializer().serializeToString(c),url=URL.createObjectURL(new Blob([data],{type:"image/svg+xml;charset=utf-8"})),a=document.createElement("a");a.href=url;a.download="symmetry-postcard-"+n+"petals.svg";a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);$("status").textContent="SVG 저장을 시작했습니다. 저장된 파일을 열어 확인하세요.";$("status").className="status";
+ }catch(e){$("status").textContent="SVG 저장에 실패했습니다. 브라우저의 다운로드 권한을 확인하세요.";$("status").className="status warning"}
+};
+render();
+</script></body></html>
